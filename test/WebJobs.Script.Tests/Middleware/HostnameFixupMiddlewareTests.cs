@@ -38,8 +38,8 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Middleware
             var mockEnvironment = new Mock<IEnvironment>(MockBehavior.Strict);
             mockEnvironment.Setup(p => p.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName)).Returns(TestHostName);
 
-            _hostNameProvider = new HostNameProvider(mockEnvironment.Object, loggerFactory.CreateLogger<HostNameProvider>());
-            _middleware = new HostnameFixupMiddleware(requestDelegate, _hostNameProvider);
+            _hostNameProvider = new HostNameProvider(mockEnvironment.Object);
+            _middleware = new HostnameFixupMiddleware(requestDelegate, _hostNameProvider, loggerFactory.CreateLogger<HostnameFixupMiddleware>());
         }
 
         [Fact]

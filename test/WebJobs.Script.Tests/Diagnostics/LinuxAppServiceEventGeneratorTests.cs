@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Azure.WebJobs.Script.WebHost;
 using Microsoft.Azure.WebJobs.Script.WebHost.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -32,7 +33,9 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.Diagnostics
             var loggerFactoryMock = new Mock<LinuxAppServiceFileLoggerFactory>(MockBehavior.Strict);
             loggerFactoryMock.Setup(f => f.GetOrCreate(It.IsAny<string>())).Returns<string>(s => _loggers[s]);
 
-            _generator = new LinuxAppServiceEventGenerator(loggerFactoryMock.Object);
+            var hostNameProviderMock = new Mock<HostNameProvider>();
+
+            _generator = new LinuxAppServiceEventGenerator(loggerFactoryMock.Object, hostNameProviderMock.Object);
         }
 
         [Theory]
