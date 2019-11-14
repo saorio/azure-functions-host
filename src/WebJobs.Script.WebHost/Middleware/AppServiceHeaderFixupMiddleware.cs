@@ -29,7 +29,11 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Middleware
 
             if (httpContext.Request.Headers.TryGetValue(ForwardedProtocolHeader, out value))
             {
-                httpContext.Request.Scheme = value.FirstOrDefault();
+                var scheme = value.FirstOrDefault();
+                if (scheme != null)
+                {
+                    httpContext.Request.Scheme = scheme;
+                }
             }
 
             await _next(httpContext);

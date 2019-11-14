@@ -101,12 +101,6 @@ namespace Microsoft.Azure.WebJobs.Script.Tests
                 {
                     configureScriptHostServices?.Invoke(scriptHostServices);
                 })
-                .Configure(app =>
-                {
-                    // This middleware is only added when env.IsLinuxConsumption()
-                    // It should be a no-op for most tests
-                    app.UseMiddleware<AppServiceHeaderFixupMiddleware>();
-                })
                 .UseStartup<TestStartup>();
 
             _testServer = new TestServer(builder);
@@ -300,6 +294,10 @@ namespace Microsoft.Azure.WebJobs.Script.Tests
 
             public void Configure(AspNetCore.Builder.IApplicationBuilder app, AspNetCore.Hosting.IApplicationLifetime applicationLifetime, AspNetCore.Hosting.IHostingEnvironment env, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
             {
+                // This middleware is only added when env.IsLinuxConsumption()
+                // It should be a no-op for most tests
+                app.UseMiddleware<AppServiceHeaderFixupMiddleware>();
+
                 _startup.Configure(app, applicationLifetime, env, loggerFactory);
             }
         }
