@@ -52,6 +52,32 @@ namespace Microsoft.Azure.WebJobs.Script.Tests
         }
 
         [Fact]
+        public async Task ArmExtensionsResourceFilter_NonExtensionRoute_Succeeds()
+        {
+            // when request not made via ARM extensions route, expect success
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "admin/host/keys");
+            request.Headers.Add(AuthorizationLevelAttribute.FunctionsKeyHeaderName, MasterKey);
+            HttpResponseMessage response = await _fixture.HttpClient.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task ArmExtensionsResourceFilter_GetSecrets_NonAdmin_Unauthorized()
+        {
+            // when GET request for secrets is made via ARM extensions route, expect unauthorized
+            var request = new HttpRequestMessage(HttpMethod.Get, "admin/host/keys");
+            request.Headers.Add(AuthorizationLevelAttribute.FunctionsKeyHeaderName, MasterKey);
+            request.Headers.Add(ScriptConstants.AntaresARMExtensionsRouteHeader, "1");
+            request.Headers.Add(ScriptConstants.AntaresARMRequestTrackingIdHeader, "1234");
+            var response = await this._fixture.HttpClient.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            string content = await response.Content.ReadAsStringAsync();
+            Assert.Equal(Microsoft.Azure.WebJobs.Script.WebHost.Properties.Resources.UnauthorizedArmExtensionResourceRequest, content);
+        }
+
+        [Fact]
         public async Task EventHubTrigger()
         {
             _fixture.TraceWriter.ClearTraces();
