@@ -1,0 +1,5 @@
+.python_packages
+azure-functions-core-tools/
+env/
+.python-version
+__pycache__/
